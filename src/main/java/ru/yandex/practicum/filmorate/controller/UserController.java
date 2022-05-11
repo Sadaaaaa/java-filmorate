@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/users")
@@ -55,9 +56,9 @@ public class UserController {
         }
 
         //имя для отображения может быть пустым — в таком случае будет использован логин
-        if (user.getName().isEmpty()) {
-            log.warn("Имя пользователя пусто");
+        if (user.getName().isBlank()) {
             user.setName(user.getLogin());
+            log.warn("Имя пользователя пусто");
             throw new ValidationException("Имя может быть пустым, вместо имени будет использован логин");
         }
 
