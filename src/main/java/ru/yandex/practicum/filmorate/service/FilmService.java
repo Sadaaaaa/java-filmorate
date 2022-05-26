@@ -42,14 +42,13 @@ public class FilmService {
 
     //обновление фильма
     public Film updateFilm(Film film) {
-        if (!inMemoryFilmStorage.isExist(film.getId())) {
-            throw new FilmNotFoundException("Некорректный ID фильма.");
-        }
+        inMemoryFilmStorage.getById(film.getId()).orElseThrow(() -> new FilmNotFoundException("Фильм с таким ID не найден."));
 
         if (isValidItem(film)) {
             inMemoryFilmStorage.getFilms().replace(film.getId(), film);
             log.info("Фильм {} обновлен", film.getName());
         }
+
         return inMemoryFilmStorage.getFilms().get(film.getId());
     }
 
@@ -64,15 +63,10 @@ public class FilmService {
     }
 
     public void deleteLike(int id, int userId) {
-
-        if (!inMemoryUserStorage.isExist(userId)) {
-            log.warn("некорректный ID user");
-            throw new UserNotFoundException("Некорректный ID пользователя.");
-        }
+        inMemoryUserStorage.getById(userId).orElseThrow(() -> new UserNotFoundException("ID юзера не найден."));
 
         Film film = inMemoryFilmStorage.getFilms().get(id);
         film.getUserLikes().remove(userId);
-
     }
 
     //получение перечня популярных фильмов
@@ -85,10 +79,8 @@ public class FilmService {
 
     //получение фильма по id
     public Film getFilm(int id) {
-        if (!inMemoryFilmStorage.isExist(id)) {
-            throw new FilmNotFoundException("Некорректный ID фильма.");
-        }
-        return inMemoryFilmStorage.getFilms().get(id);
+        return inMemoryFilmStorage.getById(id).orElseThrow(()->
+                new FilmNotFoundException("Фильм с идентификатором " + id + " не найден"));
     }
 
     public boolean isValidItem(Film film) {

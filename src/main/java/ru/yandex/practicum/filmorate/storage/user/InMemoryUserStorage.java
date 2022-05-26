@@ -10,34 +10,34 @@ import java.util.Optional;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
-    private Map<Integer, User> userHashMap = new HashMap<>();
+    private Map<Integer, User> users = new HashMap<>();
 
     @Override
     public Map<Integer, User> getUsers() {
-        return userHashMap;
+        return users;
     }
 
     public boolean isExist(int key) {
-        return userHashMap.containsKey(key);
+        return users.containsKey(key);
     }
     @Override
     public void add(Integer key, User value) {
-        userHashMap.put(key, value);
+        users.put(key, value);
     }
     @Override
     public void update(Integer key, User value) {
-        userHashMap.replace(key, value);
+        users.replace(key, value);
     }
     @Override
     public void delete(Integer key) {
-        userHashMap.remove(key);
+        users.remove(key);
     }
     @Override
     public Collection<User> getAll() {
-        return userHashMap.values();
+        return users.values();
     }
     @Override
     public Optional<User> getById(Integer key) {
-        return Optional.ofNullable(userHashMap.get(key));
+        return Optional.ofNullable(users.get(key));
     }
 }

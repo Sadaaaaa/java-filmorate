@@ -10,35 +10,35 @@ import java.util.Optional;
 
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
-    private Map<Integer, Film> filmHashMap = new HashMap<>();
+    private Map<Integer, Film> films = new HashMap<>();
 
     @Override
     public Map<Integer, Film> getFilms() {
-        return filmHashMap;
+        return films;
     }
 
     public boolean isExist(int key) {
-        return filmHashMap.containsKey(key);
+        return films.containsKey(key);
     }
     @Override
     public void add(Integer key, Film value) {
-        filmHashMap.put(key, value);
+        films.put(key, value);
     }
     @Override
     public void update(Integer key, Film value) {
-        filmHashMap.replace(key, value);
+        films.replace(key, value);
     }
     @Override
     public void delete(Integer key) {
-        filmHashMap.remove(key);
+        films.remove(key);
     }
     @Override
     public Collection<Film> getAll() {
-        return filmHashMap.values();
+        return films.values();
     }
     @Override
     public Optional<Film> getById(Integer key) {
-        return Optional.ofNullable(filmHashMap.get(key));
+        return Optional.ofNullable(films.get(key));
     }
 
 }

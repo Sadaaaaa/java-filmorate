@@ -36,16 +36,15 @@ public class UserService {
 
     //обновление пользователя
     public User updateUser(User user) {
-        if (!inMemoryUserStorage.getUsers().containsKey(user.getId())) {
-            throw new UserNotFoundException("Неверный ID пользователя.");
-        }
+        inMemoryUserStorage.getById(user.getId()).orElseThrow(() -> new UserNotFoundException("ID юзера не найден."));
 
         User userUpd = null;
         if (isValidItem(user)) {
-            inMemoryUserStorage.getUsers().replace(user.getId(), user);
+            inMemoryUserStorage.update(user.getId(), user);
             userUpd = inMemoryUserStorage.getUsers().get(user.getId());
             log.info("Пользователь {} обновлен", userUpd.getLogin());
         }
+
         return userUpd;
     }
 
@@ -58,24 +57,21 @@ public class UserService {
 
     //добавление пользователя в друзья
     public void addFriend(int id, int friendId) {
-        if (!inMemoryUserStorage.getUsers().containsKey(id)) {
-            throw new UserNotFoundException("ID пользователя не найден");
-        }
+        User user = inMemoryUserStorage.getById(id).orElseThrow(() ->
+                new UserNotFoundException("Юзер с ID " + id + " не найден."));
+        User friend = inMemoryUserStorage.getById(friendId).orElseThrow(() ->
+                new UserNotFoundException("Юзер с ID " + friendId + " не найден."));
 
-        if (!inMemoryUserStorage.getUsers().containsKey(friendId)) {
-            throw new UserNotFoundException("friendID пользователя не найден");
-        }
-
-        inMemoryUserStorage.getUsers().get(id).getFriends().add(friendId);
-        inMemoryUserStorage.getUsers().get(friendId).getFriends().add(id);
-        log.info("Друг добавлен!");
-
+        user.getFriends().add(friendId);
+        friend.getFriends().add(id);
     }
 
     //удаление из друзей
     public void deleteFriend(int id, int friendId) {
-        User user = inMemoryUserStorage.getUsers().get(id);
-        User friend = inMemoryUserStorage.getUsers().get(friendId);
+        User user = inMemoryUserStorage.getById(id).orElseThrow(() ->
+                new UserNotFoundException("Юзер с ID " + id + " не найден."));
+        User friend = inMemoryUserStorage.getById(friendId).orElseThrow(() ->
+                new UserNotFoundException("Юзер с ID " + friendId + " не найден."));
 
         user.getFriends().remove(friendId);
         friend.getFriends().remove(id);
@@ -83,21 +79,23 @@ public class UserService {
 
     //получение списка всех друзей пользователя
     public List<User> getFriendList(int id) {
-        if (inMemoryUserStorage.getUsers().containsKey(id)) {
-            User user = inMemoryUserStorage.getUsers().get(id);
-            Set<Integer> hashSet = user.getFriends();
-            return hashSet.stream()
-                    .map(x -> inMemoryUserStorage.getUsers().get(x))
-                    .collect(Collectors.toList());
-        }
+        User user = inMemoryUserStorage.getById(id).orElseThrow(() ->
+                new UserNotFoundException("Юзер с ID " + id + " не найден."));
 
-        return new ArrayList<>();
+        Set<Integer> hashSet = user.getFriends();
+
+        return hashSet.stream()
+                .map(x -> inMemoryUserStorage.getUsers().get(x))
+                .collect(Collectors.toList());
     }
 
     //получение списка общих друзей двух пользователей
     public List<User> getCommonFriendList(int id, int otherId) {
-        User user = inMemoryUserStorage.getUsers().get(id);
-        User friend = inMemoryUserStorage.getUsers().get(otherId);
+        User user = inMemoryUserStorage.getById(id).orElseThrow(() ->
+                new UserNotFoundException("Юзер с ID " + id + " не найден."));
+        User friend = inMemoryUserStorage.getById(otherId).orElseThrow(() ->
+                new UserNotFoundException("Юзер с ID " + otherId + " не найден."));
+
         Set<Integer> matchFriends = new HashSet<>(user.getFriends());
         matchFriends.retainAll(friend.getFriends());
 
@@ -108,9 +106,7 @@ public class UserService {
 
     //получение юзера по id
     public User getUser(int id) {
-        if (!inMemoryUserStorage.getUsers().containsKey(id)) {
-            throw new UserNotFoundException("ID пользователя не найден");
-        }
+        inMemoryUserStorage.getById(id).orElseThrow(() -> new UserNotFoundException("ID юзера не найден."));
         return inMemoryUserStorage.getUsers().get(id);
     }
 
