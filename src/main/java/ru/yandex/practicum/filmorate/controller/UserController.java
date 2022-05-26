@@ -29,15 +29,12 @@ public class UserController {
     //обновление пользователя
     @PutMapping
     public User updateUser(@RequestBody User user) {
-        if (userService.updateUser(user) == null) {
-            throw new UserNotFoundException("Неверный id");
-        }
         return userService.updateUser(user);
     }
 
     //получение списка всех пользователей
     @GetMapping
-    public Collection<User> getUserHashMap() {
+    public Collection<User> getUsers() {
         return userService.getUserHashMap().values();
     }
 

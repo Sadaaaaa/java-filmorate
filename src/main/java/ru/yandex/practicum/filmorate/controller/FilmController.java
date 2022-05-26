@@ -34,8 +34,8 @@ public class FilmController {
 
     //получение всех фильмов
     @GetMapping
-    public Collection<Film> getFilmHashMap() {
-        return filmService.getFilmHashMap().values();
+    public Collection<Film> getFilms() {
+        return filmService.getFilms().values();
     }
 
     //получение фильма по id

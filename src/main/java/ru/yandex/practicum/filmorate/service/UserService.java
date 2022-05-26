@@ -28,7 +28,7 @@ public class UserService {
         if (isValidItem(user)) {
             usersCount++;
             user.setId(usersCount);
-            inMemoryUserStorage.getUserHashMap().put(user.getId(), user);
+            inMemoryUserStorage.getUsers().put(user.getId(), user);
             log.info("Пользователь {} добавлен", user.getLogin());
         }
         return user;
@@ -36,41 +36,46 @@ public class UserService {
 
     //обновление пользователя
     public User updateUser(User user) {
+        if (!inMemoryUserStorage.getUsers().containsKey(user.getId())) {
+            throw new UserNotFoundException("Неверный ID пользователя.");
+        }
+
         User userUpd = null;
-        if (inMemoryUserStorage.getUserHashMap().containsKey(user.getId()) && isValidItem(user)) {
-            userUpd = inMemoryUserStorage.getUserHashMap().replace(user.getId(), user);
-            log.info("Пользователь {} обновлен", user.getLogin());
+        if (isValidItem(user)) {
+            inMemoryUserStorage.getUsers().replace(user.getId(), user);
+            userUpd = inMemoryUserStorage.getUsers().get(user.getId());
+            log.info("Пользователь {} обновлен", userUpd.getLogin());
         }
         return userUpd;
     }
 
     //получение списка всех пользователей
     public Map<Integer, User> getUserHashMap() {
-        return inMemoryUserStorage.getUserHashMap();
+        return inMemoryUserStorage.getUsers();
     }
 
 
 
     //добавление пользователя в друзья
     public void addFriend(int id, int friendId) {
-        if (!inMemoryUserStorage.getUserHashMap().containsKey(id)) {
+        if (!inMemoryUserStorage.getUsers().containsKey(id)) {
             throw new UserNotFoundException("ID пользователя не найден");
         }
 
-        if (!inMemoryUserStorage.getUserHashMap().containsKey(friendId)) {
+        if (!inMemoryUserStorage.getUsers().containsKey(friendId)) {
             throw new UserNotFoundException("friendID пользователя не найден");
         }
 
-        inMemoryUserStorage.getUserHashMap().get(id).getFriends().add(friendId);
-        inMemoryUserStorage.getUserHashMap().get(friendId).getFriends().add(id);
+        inMemoryUserStorage.getUsers().get(id).getFriends().add(friendId);
+        inMemoryUserStorage.getUsers().get(friendId).getFriends().add(id);
         log.info("Друг добавлен!");
 
     }
 
     //удаление из друзей
     public void deleteFriend(int id, int friendId) {
-        User user = inMemoryUserStorage.getUserHashMap().get(id);
-        User friend = inMemoryUserStorage.getUserHashMap().get(friendId);
+        User user = inMemoryUserStorage.getUsers().get(id);
+        User friend = inMemoryUserStorage.getUsers().get(friendId);
 
         user.getFriends().remove(friendId);
         friend.getFriends().remove(id);
@@ -78,11 +83,11 @@ public class UserService {
 
     //получение списка всех друзей пользователя
     public List<User> getFriendList(int id) {
-        if (inMemoryUserStorage.getUserHashMap().containsKey(id)) {
-            User user = inMemoryUserStorage.getUserHashMap().get(id);
+        if (inMemoryUserStorage.getUsers().containsKey(id)) {
+            User user = inMemoryUserStorage.getUsers().get(id);
             Set<Integer> hashSet = user.getFriends();
             return hashSet.stream()
-                    .map(x -> inMemoryUserStorage.getUserHashMap().get(x))
+                    .map(x -> inMemoryUserStorage.getUsers().get(x))
                     .collect(Collectors.toList());
         }
 
@@ -91,22 +96,22 @@ public class UserService {
 
     //получение списка общих друзей двух пользователей
     public List<User> getCommonFriendList(int id, int otherId) {
-        User user = inMemoryUserStorage.getUserHashMap().get(id);
-        User friend = inMemoryUserStorage.getUserHashMap().get(otherId);
+        User user = inMemoryUserStorage.getUsers().get(id);
+        User friend = inMemoryUserStorage.getUsers().get(otherId);
         Set<Integer> matchFriends = new HashSet<>(user.getFriends());
         matchFriends.retainAll(friend.getFriends());
 
         return matchFriends.stream()
-                .map(x -> inMemoryUserStorage.getUserHashMap().get(x))
+                .map(x -> inMemoryUserStorage.getUsers().get(x))
                 .collect(Collectors.toList());
     }
 
     //получение юзера по id
     public User getUser(int id) {
-        if (!inMemoryUserStorage.getUserHashMap().containsKey(id)) {
+        if (!inMemoryUserStorage.getUsers().containsKey(id)) {
             throw new UserNotFoundException("ID пользователя не найден");
         }
-        return inMemoryUserStorage.getUserHashMap().get(id);
+        return inMemoryUserStorage.getUsers().get(id);
     }
 
     //валидация
