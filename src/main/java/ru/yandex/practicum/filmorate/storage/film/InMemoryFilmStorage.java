@@ -3,10 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
@@ -14,7 +11,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Map<Integer, Film> getFilms() {
-        return films;
+        return new HashMap<>(films);
     }
 
     public boolean isExist(int key) {
@@ -33,8 +30,8 @@ public class InMemoryFilmStorage implements FilmStorage {
         films.remove(key);
     }
     @Override
-    public Collection<Film> getAll() {
-        return films.values();
+    public List<Film> getAll() {
+        return new ArrayList<>(films.values());
     }
     @Override
     public Optional<Film> getById(Integer key) {

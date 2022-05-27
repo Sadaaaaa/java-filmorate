@@ -34,7 +34,7 @@ public class FilmService {
         if (isValidItem(film)) {
             filmsCount++;
             film.setId(filmsCount);
-            inMemoryFilmStorage.getFilms().put(film.getId(), film);
+            inMemoryFilmStorage.add(film.getId(), film);
             log.info("Фильм {} добавлен", film.getName());
         }
         return film;
@@ -42,10 +42,11 @@ public class FilmService {
 
     //обновление фильма
     public Film updateFilm(Film film) {
-        inMemoryFilmStorage.getById(film.getId()).orElseThrow(() -> new FilmNotFoundException("Фильм с таким ID не найден."));
+        //вызывается для проверки существования объекта, если не существует - выбросится исключение в методе getFilm()
+        getFilm(film.getId());
 
         if (isValidItem(film)) {
-            inMemoryFilmStorage.getFilms().replace(film.getId(), film);
+            inMemoryFilmStorage.update(film.getId(), film);
             log.info("Фильм {} обновлен", film.getName());
         }
 
@@ -58,14 +59,14 @@ public class FilmService {
     }
 
     public void addLike(int id, int userId) {
-        Film film = inMemoryFilmStorage.getById(id).orElseThrow(() -> new FilmNotFoundException("Фильм с таким ID не найден."));
+        Film film = getFilm(id);
         film.getUserLikes().add(userId);
     }
 
     public void deleteLike(int id, int userId) {
         inMemoryUserStorage.getById(userId).orElseThrow(() -> new UserNotFoundException("ID юзера не найден."));
 
-        Film film = inMemoryFilmStorage.getFilms().get(id);
+        Film film = getFilm(id);
         film.getUserLikes().remove(userId);
     }
 

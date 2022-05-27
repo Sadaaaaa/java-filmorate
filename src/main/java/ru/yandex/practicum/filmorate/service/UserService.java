@@ -28,7 +28,7 @@ public class UserService {
         if (isValidItem(user)) {
             usersCount++;
             user.setId(usersCount);
-            inMemoryUserStorage.getUsers().put(user.getId(), user);
+            inMemoryUserStorage.add(user.getId(), user);
             log.info("Пользователь {} добавлен", user.getLogin());
         }
         return user;
@@ -36,12 +36,13 @@ public class UserService {
 
     //обновление пользователя
     public User updateUser(User user) {
-        inMemoryUserStorage.getById(user.getId()).orElseThrow(() -> new UserNotFoundException("ID юзера не найден."));
+        //вызывается для проверки существования объекта, если не существует - выбросится исключение в методе getUser()
+        getUser(user.getId());
 
         User userUpd = null;
         if (isValidItem(user)) {
             inMemoryUserStorage.update(user.getId(), user);
-            userUpd = inMemoryUserStorage.getUsers().get(user.getId());
+            userUpd = getUser(user.getId());
             log.info("Пользователь {} обновлен", userUpd.getLogin());
         }
 
@@ -57,10 +58,8 @@ public class UserService {
 
     //добавление пользователя в друзья
     public void addFriend(int id, int friendId) {
-        User user = inMemoryUserStorage.getById(id).orElseThrow(() ->
-                new UserNotFoundException("Юзер с ID " + id + " не найден."));
-        User friend = inMemoryUserStorage.getById(friendId).orElseThrow(() ->
-                new UserNotFoundException("Юзер с ID " + friendId + " не найден."));
+        User user = getUser(id);
+        User friend = getUser(friendId);
 
         user.getFriends().add(friendId);
         friend.getFriends().add(id);
@@ -68,10 +67,8 @@ public class UserService {
 
     //удаление из друзей
     public void deleteFriend(int id, int friendId) {
-        User user = inMemoryUserStorage.getById(id).orElseThrow(() ->
-                new UserNotFoundException("Юзер с ID " + id + " не найден."));
-        User friend = inMemoryUserStorage.getById(friendId).orElseThrow(() ->
-                new UserNotFoundException("Юзер с ID " + friendId + " не найден."));
+        User user = getUser(id);
+        User friend = getUser(friendId);
 
         user.getFriends().remove(friendId);
         friend.getFriends().remove(id);
@@ -79,28 +76,25 @@ public class UserService {
 
     //получение списка всех друзей пользователя
     public List<User> getFriendList(int id) {
-        User user = inMemoryUserStorage.getById(id).orElseThrow(() ->
-                new UserNotFoundException("Юзер с ID " + id + " не найден."));
+        User user = getUser(id);
 
         Set<Integer> hashSet = user.getFriends();
 
         return hashSet.stream()
-                .map(x -> inMemoryUserStorage.getUsers().get(x))
+                .map(this::getUser)
                 .collect(Collectors.toList());
     }
 
     //получение списка общих друзей двух пользователей
     public List<User> getCommonFriendList(int id, int otherId) {
-        User user = inMemoryUserStorage.getById(id).orElseThrow(() ->
-                new UserNotFoundException("Юзер с ID " + id + " не найден."));
-        User friend = inMemoryUserStorage.getById(otherId).orElseThrow(() ->
-                new UserNotFoundException("Юзер с ID " + otherId + " не найден."));
+        User user = getUser(id);
+        User friend = getUser(otherId);
 
         Set<Integer> matchFriends = new HashSet<>(user.getFriends());
         matchFriends.retainAll(friend.getFriends());
 
         return matchFriends.stream()
-                .map(x -> inMemoryUserStorage.getUsers().get(x))
+                .map(this::getUser)
                 .collect(Collectors.toList());
     }
 

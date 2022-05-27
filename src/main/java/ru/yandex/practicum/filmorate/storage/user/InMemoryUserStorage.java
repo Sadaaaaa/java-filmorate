@@ -3,10 +3,7 @@ package ru.yandex.practicum.filmorate.storage.user;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
@@ -14,7 +11,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public Map<Integer, User> getUsers() {
-        return users;
+        return new HashMap<>(users);
     }
 
     public boolean isExist(int key) {
@@ -33,8 +30,8 @@ public class InMemoryUserStorage implements UserStorage {
         users.remove(key);
     }
     @Override
-    public Collection<User> getAll() {
-        return users.values();
+    public List<User> getAll() {
+        return new ArrayList<>(users.values());
     }
     @Override
     public Optional<User> getById(Integer key) {
