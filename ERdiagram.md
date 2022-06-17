@@ -1,6 +1,9 @@
 ## ER диаграмма базы данных приложения Filmorate
+![QuickDBD-export (4)](https://user-images.githubusercontent.com/45097739/174284096-37575a48-0cae-4eca-8956-11c9b938d294.png)
 
-![QuickDBD-export (3)](https://user-images.githubusercontent.com/45097739/172686867-4f74a4a8-877b-4a06-9b97-81627bb454ea.png)
+
+
+
 
 >friendship_status:\
 >0 - заявка на дружбу\
