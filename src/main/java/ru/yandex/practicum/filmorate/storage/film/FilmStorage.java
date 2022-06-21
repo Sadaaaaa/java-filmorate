@@ -11,7 +11,7 @@ public interface FilmStorage {
 
     boolean isExist(int item);
     void add(Integer key, Film value);
-    void update(Integer key, Film value);
+    Film update(Integer key, Film value);
     void delete(Integer key);
     Collection<Film> getAll();
     Optional<Film> getById(Integer key);

@@ -2,13 +2,14 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.LikesDao;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -17,16 +18,16 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class FilmService {
-    private FilmStorage inMemoryFilmStorage;
-    private UserStorage inMemoryUserStorage;
+    private final FilmStorage filmStorage;
     private static final int MAX_DESCRIPTION_SYMBOLS = 200;
     private static final LocalDate OLDEST_RELEASE_DATE = LocalDate.of(1895, 12, 28);
     private int filmsCount;
+    private final LikesDao likesDao;
 
     @Autowired
-    public FilmService(FilmStorage inMemoryFilmStorage, UserStorage inMemoryUserStorage) {
-        this.inMemoryFilmStorage = inMemoryFilmStorage;
-        this.inMemoryUserStorage = inMemoryUserStorage;
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, LikesDao likesDao) {
+        this.filmStorage = filmStorage;
+        this.likesDao = likesDao;
     }
 
     //добавление фильма
@@ -34,7 +35,7 @@ public class FilmService {
         if (isValidItem(film)) {
             filmsCount++;
             film.setId(filmsCount);
-            inMemoryFilmStorage.add(film.getId(), film);
+            filmStorage.add(film.getId(), film);
             log.info("Фильм {} добавлен", film.getName());
         }
         return film;
@@ -42,45 +43,50 @@ public class FilmService {
 
     //обновление фильма
     public Film updateFilm(Film film) {
-        //вызывается для проверки существования объекта, если не существует - выбросится исключение в методе getFilm()
-        getFilm(film.getId());
-
-        if (isValidItem(film)) {
-            inMemoryFilmStorage.update(film.getId(), film);
-            log.info("Фильм {} обновлен", film.getName());
-        }
-
-        return inMemoryFilmStorage.getFilms().get(film.getId());
+        return filmStorage.update(film.getId(), film);
+//        //вызывается для проверки существования объекта, если не существует - выбросится исключение в методе getFilm()
+//        getFilm(film.getId());
+//
+//        if (isValidItem(film)) {
+//            filmStorage.update(film.getId(), film);
+//            log.info("Фильм {} обновлен", film.getName());
+//        }
+//
+//        return filmStorage.getFilms().get(film.getId());
     }
 
     //получение всех фильмов
     public Map<Integer, Film> getFilms() {
-        return inMemoryFilmStorage.getFilms();
+        return filmStorage.getFilms();
     }
 
     public void addLike(int id, int userId) {
-        Film film = getFilm(id);
-        film.getUserLikes().add(userId);
+        likesDao.addLikeDao(id, userId);
+
+//        Film film = getFilm(id);
+//        film.getUserLikes().add(userId);
     }
 
     public void deleteLike(int id, int userId) {
-        inMemoryUserStorage.getById(userId).orElseThrow(() -> new UserNotFoundException("ID юзера не найден."));
-
-        Film film = getFilm(id);
-        film.getUserLikes().remove(userId);
+        likesDao.deleteLikeDao(id, userId);
+//        filmStorage.getById(userId).orElseThrow(() -> new UserNotFoundException("ID юзера не найден."));
+//
+//        Film film = getFilm(id);
+//        film.getUserLikes().remove(userId);
     }
 
     //получение перечня популярных фильмов
     public List<Film> getPopularFilms(int count) {
-        return inMemoryFilmStorage.getFilms().values().stream()
-                .sorted((o1, o2) -> o2.getUserLikes().size() - o1.getUserLikes().size())
+        return filmStorage.getFilms().values().stream()
+                .sorted((o1, o2) -> o2.getUserLikes() - o1.getUserLikes())
                 .limit(count)
                 .collect(Collectors.toList());
     }
 
     //получение фильма по id
     public Film getFilm(int id) {
-        return inMemoryFilmStorage.getById(id).orElseThrow(()->
+
+        return filmStorage.getById(id).orElseThrow(()->
                 new FilmNotFoundException("Фильм с идентификатором " + id + " не найден"));
     }
 
@@ -113,6 +119,12 @@ public class FilmService {
         if (film.getDuration() < 0) {
             log.warn("Продолжительность фильма меньше нуля");
             throw new ValidationException("Продолжительность фильма меньше нуля");
+        }
+
+        //отсутствует рейтинг MPA
+        if (film.getMpa() == null) {
+            log.warn("Отсутствует рейтинг MPA");
+            throw new ValidationException("Отсутствует рейтинг MPA");
         }
 
         return true;

@@ -22,8 +22,8 @@ public class InMemoryFilmStorage implements FilmStorage {
         films.put(key, value);
     }
     @Override
-    public void update(Integer key, Film value) {
-        films.replace(key, value);
+    public Film update(Integer key, Film value) {
+        return films.replace(key, value);
     }
     @Override
     public void delete(Integer key) {

@@ -14,6 +14,7 @@ public class User {
     private String name;
     private LocalDate birthday;
     private Set<Integer> friends;
+    private int friendshipStatus;
 
 
     public User(String email, String login, String name, LocalDate birthday) {
@@ -22,5 +23,9 @@ public class User {
         this.name = name;
         this.birthday = birthday;
         friends = new HashSet<>();
+    }
+
+    public User() {
+
     }
 }

@@ -2,7 +2,9 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.FriendsDao;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -15,12 +17,15 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class UserService {
-    private UserStorage inMemoryUserStorage;
+    private UserStorage userStorage;
     private int usersCount;
 
+    private FriendsDao friendsDao;
+
     @Autowired
-    public UserService(UserStorage inMemoryUserStorage) {
-        this.inMemoryUserStorage = inMemoryUserStorage;
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage, FriendsDao friendsDao) {
+        this.userStorage = userStorage;
+        this.friendsDao = friendsDao;
     }
 
     //создание пользователя
@@ -28,7 +33,7 @@ public class UserService {
         if (isValidItem(user)) {
             usersCount++;
             user.setId(usersCount);
-            inMemoryUserStorage.add(user.getId(), user);
+            userStorage.add(user.getId(), user);
             log.info("Пользователь {} добавлен", user.getLogin());
         }
         return user;
@@ -41,7 +46,7 @@ public class UserService {
 
         User userUpd = null;
         if (isValidItem(user)) {
-            inMemoryUserStorage.update(user.getId(), user);
+            userStorage.update(user.getId(), user);
             userUpd = getUser(user.getId());
             log.info("Пользователь {} обновлен", userUpd.getLogin());
         }
@@ -51,57 +56,76 @@ public class UserService {
 
     //получение списка всех пользователей
     public Map<Integer, User> getUserHashMap() {
-        return inMemoryUserStorage.getUsers();
+        return userStorage.getUsers();
     }
-
 
 
     //добавление пользователя в друзья
     public void addFriend(int id, int friendId) {
-        User user = getUser(id);
-        User friend = getUser(friendId);
+        // Хранение в DataBase
+        friendsDao.addFriendDao(id, friendId);
 
-        user.getFriends().add(friendId);
-        friend.getFriends().add(id);
+        // Хранение в inMemory
+//        User user = getUser(id);
+//        User friend = getUser(friendId);
+//
+//        user.getFriends().add(friendId);
+//        friend.getFriends().add(id);
     }
 
     //удаление из друзей
     public void deleteFriend(int id, int friendId) {
-        User user = getUser(id);
-        User friend = getUser(friendId);
+        // Хранение в DataBase
+        friendsDao.deleteFriendDao(id, friendId);
 
-        user.getFriends().remove(friendId);
-        friend.getFriends().remove(id);
+        // Хранение в inMemory
+//        User user = getUser(id);
+//        User friend = getUser(friendId);
+//
+//        user.getFriends().remove(friendId);
+//        friend.getFriends().remove(id);
     }
 
     //получение списка всех друзей пользователя
     public List<User> getFriendList(int id) {
-        User user = getUser(id);
+        // Хранение в DataBase
+        return friendsDao.getFriendListDao(id);
 
-        Set<Integer> hashSet = user.getFriends();
 
-        return hashSet.stream()
-                .map(this::getUser)
-                .collect(Collectors.toList());
+        // Хранение в inMemory
+//        User user = getUser(id);
+//
+//        Set<Integer> hashSet = user.getFriends();
+//
+//        return hashSet.stream()
+//                .map(this::getUser)
+//                .collect(Collectors.toList());
     }
 
     //получение списка общих друзей двух пользователей
     public List<User> getCommonFriendList(int id, int otherId) {
-        User user = getUser(id);
-        User friend = getUser(otherId);
+        // Хранение в DataBase
 
-        Set<Integer> matchFriends = new HashSet<>(user.getFriends());
-        matchFriends.retainAll(friend.getFriends());
+        return friendsDao.getCommonFriendListDao(id, otherId);
 
-        return matchFriends.stream()
-                .map(this::getUser)
-                .collect(Collectors.toList());
+        // Хранение в inMemory
+//        User user = getUser(id);
+//        User friend = getUser(otherId);
+//
+//
+//        Set<Integer> matchFriends = new HashSet<>(user.getFriends());
+//        matchFriends.retainAll(friend.getFriends());
+//
+//
+//        return matchFriends.stream()
+//                .map(this::getUser)
+//                .collect(Collectors.toList());
     }
 
     //получение юзера по id
     public User getUser(int id) {
-        inMemoryUserStorage.getById(id).orElseThrow(() -> new UserNotFoundException("ID юзера не найден."));
-        return inMemoryUserStorage.getUsers().get(id);
+        return userStorage.getById(id).orElseThrow(() -> new UserNotFoundException("ID юзера не найден."));
+        //return userStorage.getUsers().get(id);
     }
 
     //валидация
