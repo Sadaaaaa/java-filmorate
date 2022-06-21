@@ -38,9 +38,10 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void add(Integer key, User value) {
-        String sql = "INSERT INTO users (user_name, user_login, user_email, user_birthday) "
-                + "VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO users (USER_ID, user_name, user_login, user_email, user_birthday) "
+                + "VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
+                key,
                 value.getName(),
                 value.getLogin(),
                 value.getEmail(),

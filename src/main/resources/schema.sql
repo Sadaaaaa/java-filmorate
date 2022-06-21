@@ -1,10 +1,10 @@
-drop table FILMS_GENRE;
-drop table FILMS;
-drop table FRIENDS;
-drop table GENRE;
-drop table LIKES;
-drop table MPA;
-drop table USERS;
+-- drop table FILMS_GENRE;
+-- drop table FILMS;
+-- drop table FRIENDS;
+-- drop table GENRE;
+-- drop table LIKES;
+-- drop table MPA;
+-- drop table USERS;
 
 create table IF NOT EXISTS Films
 (

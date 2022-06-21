@@ -13,4 +13,7 @@ public class Mpa {
 
     public Mpa() {
     }
+
+    public Mpa(int id, String name) {
+    }
 }
