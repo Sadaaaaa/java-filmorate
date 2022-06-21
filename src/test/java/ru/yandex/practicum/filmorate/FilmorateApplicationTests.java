@@ -18,21 +18,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class FilmorateApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
-
-	private final UserDbStorage userStorage;
-
-	@Test
-	public void testFindUserById() {
-
-		Optional<User> userOptional = userStorage.getById(1);
-
-		assertThat(userOptional)
-				.isPresent()
-				.hasValueSatisfying(user ->
-						assertThat(user).hasFieldOrPropertyWithValue("id", 1)
-				);
-	}
+//	@Test
+//	void contextLoads() {
+//	}
+//
+//	private final UserDbStorage userStorage;
+//
+//	@Test
+//	public void testFindUserById() {
+//
+//		Optional<User> userOptional = userStorage.getById(1);
+//
+//		assertThat(userOptional)
+//				.isPresent()
+//				.hasValueSatisfying(user ->
+//						assertThat(user).hasFieldOrPropertyWithValue("id", 1)
+//				);
+//	}
 }
