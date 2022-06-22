@@ -1,22 +1,47 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.lang.NonNull;
 
-import java.time.Duration;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
-@Builder
-@AllArgsConstructor
+@Setter
 public class Film {
     private int id;
     @NotNull
     private String name;
     private String description;
     private LocalDate releaseDate;
-    private Duration duration;
+    private int duration;
+    private Integer userLikes;
+    private int rate;
+    private Genres[] genres;
+    private Mpa mpa;
+
+    public Film(String name, String description, LocalDate releaseDate, int duration, int rate, Genres[] genres, Mpa mpa) {
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.rate = rate;
+        this.genres = genres;
+        this.mpa = mpa;
+    }
+
+    public Film() {
+
+    }
+
+    public Film(int id, String name, String description, LocalDate releaseDate, int duration, Mpa mpa) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.mpa = mpa;
+    }
 }
