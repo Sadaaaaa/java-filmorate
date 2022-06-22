@@ -19,7 +19,7 @@ public class GenresDao {
     }
 
     public Genres getGenresDao(int id) {
-        String sql = "SELECT * FROM GENRE WHERE GENRE_ID = ?";
+        String sql = "SELECT * FROM genre WHERE genre_id = ?";
         try {
             return jdbcTemplate.query(sql, new GenresRowMapper(), id).get(0);
         } catch (IndexOutOfBoundsException e) {
@@ -28,7 +28,7 @@ public class GenresDao {
     }
 
     public List<Genres> getAllGenresDao() {
-        String sql = "SELECT * FROM GENRE";
+        String sql = "SELECT * FROM genre";
         return jdbcTemplate.query(sql, new GenresRowMapper());
     }
 }

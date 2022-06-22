@@ -25,17 +25,16 @@ public class FilmDbStorage implements FilmStorage {
         this.filmGenreDao = filmGenreDao;
     }
 
-
     @Override
     public Map<Integer, Film> getFilms() {
-        String sqlFilms = "SELECT * FROM FILMS JOIN MPA ON FILMS.FILM_MPAID = MPA.MPA_ID";
+        String sqlFilms = "SELECT * FROM Films AS f JOIN Mpa AS m ON f.film_mpaid = m.mpa_id";
         List<Film> filmsList = jdbcTemplate.query(sqlFilms, new FilmRowMapper());
 
-        String sqlLikes = "SELECT FILM_ID, COUNT(USER_ID) AS likes FROM Likes GROUP BY film_id";
+        String sqlLikes = "SELECT film_id, COUNT(user_id) AS likes FROM Likes GROUP BY film_id";
         Map<Integer, Integer> likes = jdbcTemplate.query(sqlLikes, rs -> {
             Map<Integer, Integer> filmsAndLikes = new HashMap<>();
             while (rs.next()) {
-                filmsAndLikes.put(rs.getInt("FILM_ID"), rs.getInt("likes"));
+                filmsAndLikes.put(rs.getInt("film_id"), rs.getInt("likes"));
             }
             return filmsAndLikes;
         });
@@ -51,13 +50,8 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public boolean isExist(int item) {
-        return false;
-    }
-
-    @Override
     public void add(Integer key, Film value) {
-        String sqlFilm = "INSERT INTO films (FILM_ID, film_name, film_description, film_releaseDate, film_duration, FILM_MPAID) " +
+        String sqlFilm = "INSERT INTO films (film_id, film_name, film_description, film_releaseDate, film_duration, FILM_MPAID) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sqlFilm,
                 key,
@@ -81,13 +75,13 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film update(Integer key, Film value) {
 
-        String sqlFind = "SELECT FILM_ID FROM FILMS WHERE film_id = ?";
+        String sqlFind = "SELECT film_id FROM Films WHERE film_id = ?";
         List<Integer> listFind = jdbcTemplate.query(sqlFind, (rs, rowNum) -> rs.getInt(1), key);
         if (listFind.size() == 0) {
             throw new FilmNotFoundException("Film ID not found!");
         }
 
-        String sqlUpdateFilm = "UPDATE films SET " +
+        String sqlUpdateFilm = "UPDATE Films SET " +
                 "film_name = ?, film_description = ?, film_releaseDate = ?, film_duration = ?, film_mpaID = ?" +
                 "WHERE film_id = ?";
         jdbcTemplate.update(sqlUpdateFilm,
@@ -110,21 +104,16 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void delete(Integer key) {
-        String sql = "DELETE FROM films WHERE film_id = ?";
+        String sql = "DELETE FROM Films WHERE film_id = ?";
         jdbcTemplate.update(sql, key);
-    }
-
-    @Override
-    public Collection<Film> getAll() {
-        return null;
     }
 
     @Override
     public Optional<Film> getById(Integer key) {
 
-        String sql = "SELECT * FROM FILMS JOIN MPA ON FILMS.FILM_MPAID = MPA.MPA_ID WHERE film_id = ? ";
+        String sql = "SELECT * FROM Films AS f JOIN Mpa AS m ON f.film_mpaid = m.mpa_id WHERE film_id = ? ";
 
-        String sqlGenres = "select * from FILMS_GENRE join GENRE on GENRE.GENRE_ID = FILMS_GENRE.GENRE_ID where FILM_ID = ? ORDER BY GENRE.GENRE_ID";
+        String sqlGenres = "select * from Films_genre AS fg join Genre AS g on g.genre_id = fg.genre_id where film_id = ? ORDER BY g.genre_id";
         List<Genres> genresList = jdbcTemplate.query(sqlGenres, new GenresRowMapper(), key);
 
         Genres[] genresArray = new Genres[genresList.size()];

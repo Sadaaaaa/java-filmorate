@@ -8,10 +8,10 @@ import java.util.Optional;
 
 public interface UserStorage {
     Map<Integer, User> getUsers();
-    boolean isExist(int item);
+//    boolean isExist(int item);
     void add(Integer key, User value);
     void update(Integer key, User value);
     void delete(Integer key);
-    Collection<User> getAll();
+//    Collection<User> getAll();
     Optional<User> getById(Integer key);
 }

@@ -29,10 +29,10 @@ public class InMemoryUserStorage implements UserStorage {
     public void delete(Integer key) {
         users.remove(key);
     }
-    @Override
-    public List<User> getAll() {
-        return new ArrayList<>(users.values());
-    }
+//    @Override
+//    public List<User> getAll() {
+//        return new ArrayList<>(users.values());
+//    }
     @Override
     public Optional<User> getById(Integer key) {
         return Optional.ofNullable(users.get(key));

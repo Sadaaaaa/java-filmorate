@@ -69,7 +69,8 @@ CREATE TABLE IF NOT EXISTS Friends
 (
     user_id   INT,
     friend_id INT,
-    status INT,
+    status varchar(50),
+--     status VARCHAR(50),
     CONSTRAINT friends_pk
         PRIMARY KEY (user_id, friend_id)
 --     CONSTRAINT users_fk

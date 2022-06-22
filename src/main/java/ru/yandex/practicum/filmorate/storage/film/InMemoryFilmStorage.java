@@ -29,10 +29,10 @@ public class InMemoryFilmStorage implements FilmStorage {
     public void delete(Integer key) {
         films.remove(key);
     }
-    @Override
-    public List<Film> getAll() {
-        return new ArrayList<>(films.values());
-    }
+//    @Override
+//    public List<Film> getAll() {
+//        return new ArrayList<>(films.values());
+//    }
     @Override
     public Optional<Film> getById(Integer key) {
         return Optional.ofNullable(films.get(key));

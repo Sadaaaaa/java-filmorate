@@ -20,16 +20,16 @@ public class MpaDao {
     }
 
     public Mpa getMpaDao(int id) {
-        String sql = "SELECT * FROM MPA WHERE MPA_ID = ?";
+        String sql = "SELECT * FROM mpa WHERE mpa_id = ?";
         try {
             return jdbcTemplate.query(sql, new MpaRowMapper(), id).get(0);
         } catch (IndexOutOfBoundsException e) {
-            throw new FilmNotFoundException("MPA id is not correct!");
+            throw new FilmNotFoundException("MPA ID is not correct!");
         }
     }
 
     public List<Mpa> getAllMpaDao() {
-        String sql = "SELECT * FROM MPA";
+        String sql = "SELECT * FROM mpa";
         return jdbcTemplate.query(sql, new MpaRowMapper());
     }
 }

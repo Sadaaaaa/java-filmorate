@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -64,62 +63,24 @@ public class UserService {
     public void addFriend(int id, int friendId) {
         // Хранение в DataBase
         friendsDao.addFriendDao(id, friendId);
-
-        // Хранение в inMemory
-//        User user = getUser(id);
-//        User friend = getUser(friendId);
-//
-//        user.getFriends().add(friendId);
-//        friend.getFriends().add(id);
     }
 
     //удаление из друзей
     public void deleteFriend(int id, int friendId) {
         // Хранение в DataBase
         friendsDao.deleteFriendDao(id, friendId);
-
-        // Хранение в inMemory
-//        User user = getUser(id);
-//        User friend = getUser(friendId);
-//
-//        user.getFriends().remove(friendId);
-//        friend.getFriends().remove(id);
     }
 
     //получение списка всех друзей пользователя
     public List<User> getFriendList(int id) {
         // Хранение в DataBase
         return friendsDao.getFriendListDao(id);
-
-
-        // Хранение в inMemory
-//        User user = getUser(id);
-//
-//        Set<Integer> hashSet = user.getFriends();
-//
-//        return hashSet.stream()
-//                .map(this::getUser)
-//                .collect(Collectors.toList());
     }
 
     //получение списка общих друзей двух пользователей
     public List<User> getCommonFriendList(int id, int otherId) {
         // Хранение в DataBase
-
         return friendsDao.getCommonFriendListDao(id, otherId);
-
-        // Хранение в inMemory
-//        User user = getUser(id);
-//        User friend = getUser(otherId);
-//
-//
-//        Set<Integer> matchFriends = new HashSet<>(user.getFriends());
-//        matchFriends.retainAll(friend.getFriends());
-//
-//
-//        return matchFriends.stream()
-//                .map(this::getUser)
-//                .collect(Collectors.toList());
     }
 
     //получение юзера по id

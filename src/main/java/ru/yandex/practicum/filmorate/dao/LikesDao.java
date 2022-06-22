@@ -24,7 +24,7 @@ public class LikesDao {
 
     public void deleteLikeDao(int id, int userId) {
         // проверка есть лайк в базе или нет
-        String sqlChecker = "SELECT * FROM LIKES WHERE film_id = ? AND user_id = ?";
+        String sqlChecker = "SELECT * FROM Likes WHERE film_id = ? AND user_id = ?";
         try {
             jdbcTemplate.queryForObject(sqlChecker, new LikesRowMapper(), id, userId);
         } catch (EmptyResultDataAccessException e) {
@@ -35,11 +35,9 @@ public class LikesDao {
         String sqlDelete = "DELETE FROM Likes WHERE film_id = ? AND user_id = ?";
         try {
             boolean delLike = jdbcTemplate.update(sqlDelete, id, userId) > 0;
-            if (delLike) {
-                System.out.println("Лайк удален!");
-            }
+
         } catch (EmptyResultDataAccessException e) {
-            throw new UserNotFoundException("Wrong user id!");
+            throw new UserNotFoundException("Wrong user ID!");
         }
     }
 }

@@ -32,11 +32,6 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public boolean isExist(int item) {
-        return false;
-    }
-
-    @Override
     public void add(Integer key, User value) {
         String sql = "INSERT INTO users (USER_ID, user_name, user_login, user_email, user_birthday) "
                 + "VALUES (?, ?, ?, ?, ?)";
@@ -63,12 +58,8 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void delete(Integer key) {
-
-    }
-
-    @Override
-    public Collection<User> getAll() {
-        return null;
+        String sql = "DELETE FROM users WHERE user_id = ?";
+        jdbcTemplate.update(sql, key);
     }
 
     @Override

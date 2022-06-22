@@ -44,15 +44,6 @@ public class FilmService {
     //обновление фильма
     public Film updateFilm(Film film) {
         return filmStorage.update(film.getId(), film);
-//        //вызывается для проверки существования объекта, если не существует - выбросится исключение в методе getFilm()
-//        getFilm(film.getId());
-//
-//        if (isValidItem(film)) {
-//            filmStorage.update(film.getId(), film);
-//            log.info("Фильм {} обновлен", film.getName());
-//        }
-//
-//        return filmStorage.getFilms().get(film.getId());
     }
 
     //получение всех фильмов
@@ -62,17 +53,10 @@ public class FilmService {
 
     public void addLike(int id, int userId) {
         likesDao.addLikeDao(id, userId);
-
-//        Film film = getFilm(id);
-//        film.getUserLikes().add(userId);
     }
 
     public void deleteLike(int id, int userId) {
         likesDao.deleteLikeDao(id, userId);
-//        filmStorage.getById(userId).orElseThrow(() -> new UserNotFoundException("ID юзера не найден."));
-//
-//        Film film = getFilm(id);
-//        film.getUserLikes().remove(userId);
     }
 
     //получение перечня популярных фильмов

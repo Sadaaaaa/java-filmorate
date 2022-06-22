@@ -23,26 +23,25 @@ public class FilmGenreDao {
         delete(filmId);
 
         Set<Genres> newSet = new HashSet<>();
-        if(film.getGenres().length != 0) {
+        if (film.getGenres().length != 0) {
             newSet.addAll(Arrays.asList(film.getGenres()));
         }
         List<Genres> arrGenre = new ArrayList<>(newSet);
 
         for (int i = 0; i < arrGenre.size(); i++) {
-            jdbcTemplate.update("INSERT INTO FILMS_GENRE (FILM_ID, GENRE_ID)" +
-                            "VALUES (?, ?)",
+            jdbcTemplate.update("INSERT INTO films_genre (film_id, genre_id)" + "VALUES (?, ?)",
                     filmId,
                     arrGenre.get(i).getId());
         }
 
         return jdbcTemplate.query(
-                "SELECT * FROM FILMS_GENRE WHERE FILM_ID = ?",
+                "SELECT * FROM films_genre WHERE film_id = ?",
                 new FilmsGenreRowMapper(),
                 filmId);
     }
 
     public boolean delete(int filmId) {
-        String sql = "DELETE FROM FILMS_GENRE WHERE FILM_ID = ?";
+        String sql = "DELETE FROM films_genre WHERE film_id = ?";
         return jdbcTemplate.update(sql, filmId) > 0;
     }
 }
